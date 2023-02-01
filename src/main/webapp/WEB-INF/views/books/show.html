@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+</head>
+<body>
+<p th:text="${book.getName() + ', ' + book.getAuthor()+ ', ' + book.getYear()}">book</p>
+
+<p>Выберите человека </p>
+
+<form th:method="PATCH" th:action="@{/books/add}">
+    <label for="person"> Choose:</label>
+    <select th:object="${person}" th:field="*{id}" id="person">
+        <option th:each="person:${people}" th:value="${person.getId()}"
+                th:text="${person.getName()}"></option>
+    </select>
+
+    <input type="submit" value="Admin is ">
+</form>
+
+<a th:href="@{/books/{id}/edit(id=${book.getId()})}">Редактировать</a>
+
+<form th:method="DELETE" th:action="@{/books/{id} (id = ${book.getId()})}" >
+    <input type="submit" value="Удалить"/>
+</form>
+</body>
+</html>
