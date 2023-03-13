@@ -1,10 +1,12 @@
 package ru.amart.springcourse.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.amart.springcourse.models.Book;
 import ru.amart.springcourse.models.Person;
 
 import java.sql.PreparedStatement;
@@ -40,12 +42,22 @@ public class PersonDAO {
         jdbcTemplate.update("INSERT INTO Person(name, year) VALUES (?, ?)", person.getName(), person.getYear());
     }
 
-    public void update(int id, Person person) {
-        jdbcTemplate.update(" UPDATE Person SET name=?, year= ? WHERE id=?", person.getName(), person.getYear(), id);
+    public void update(int id, Person updatedPerson) {
+        jdbcTemplate.update(" UPDATE Person SET name=?, year= ? WHERE id=?", updatedPerson.getName(), updatedPerson.getYear(), id);
     }
 
     public void delete(int id) {
         jdbcTemplate.update("DELETE FROM Person WHERE id =?", id);
+    }
+
+    public Optional<Person> getPersonByName(String name) {
+        return jdbcTemplate.query("SELECT * FROM Person WHERE name=?", new Object[]{name},
+                new BeanPropertyRowMapper<>(Person.class)).stream().findAny();
+    }
+
+    public List<Book> getBooksByPersonId(int id) {
+        return jdbcTemplate.query("SELECT * FROM Book WHERE person_id=?", new Object[]{id},
+                new BeanPropertyRowMapper<>(Book.class));
     }
 
     //////////////////////////////////

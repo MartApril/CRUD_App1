@@ -27,10 +27,10 @@ public class BookDAO {
         return jdbcTemplate.query("SELECT * FROM Book", new BeanPropertyRowMapper<>(Book.class));
     }
 
-    public Optional<Book> show(String name) {
-        return jdbcTemplate.query("SELECT * FROM Book WHERE name = ?", new Object[]{name}, new BeanPropertyRowMapper<>(Book.class))
-                .stream().findAny();
-    }
+//    public Optional<Book> show(String name) {
+//        return jdbcTemplate.query("SELECT * FROM Book WHERE name = ?", new Object[]{name}, new BeanPropertyRowMapper<>(Book.class))
+//                .stream().findAny();
+//    }
 
     public Book show(int id) {
         return jdbcTemplate.query("SELECT * FROM Book WHERE id = ?", new Object[]{id}, new BeanPropertyRowMapper<>(Book.class))
@@ -41,14 +41,26 @@ public class BookDAO {
         jdbcTemplate.update("INSERT INTO Book (name, author, year) VALUES (?, ?)", book.getName(), book.getAuthor(), book.getYear());
     }
 
-    public void update(int id, Book book) {
-        jdbcTemplate.update(" UPDATE Book SET name = ?, author = ?, year = ? WHERE id=?", book.getName(), book.getAuthor(), book.getYear(), id);
+    public void update(int id, Book updatedBook) {
+        jdbcTemplate.update(" UPDATE Book SET name = ?, author = ?, year = ? WHERE id=?", updatedBook.getName(), updatedBook.getAuthor(), updatedBook.getYear(), id);
     }
 
     public void delete(int id) {
         jdbcTemplate.update("DELETE FROM Book WHERE id =?", id);
     }
 
+    public Optional<Person> getBookOwner(int id) {
+        return jdbcTemplate.query("SELECT Person.* FROM Book JOIN Person ON Book.person_id=Person.id " +
+                "WHERE Book.id=?", new Object[]{id}, new BeanPropertyRowMapper<>(Person.class)).stream().findAny();
+    }
+
+    public void release(int id) {
+        jdbcTemplate.update("UPDATE  Book SET person_id=NULL WHERE id=?", id);
+    }
+
+    public void assign(int id, Person selectedPerson) {
+        jdbcTemplate.update("UPDATE Book SET person_id=? WHERE id=?", selectedPerson.getId(), id);
+    }
 //    //////////////////////////////////
 //    ///////  Тест пакетной вставки
 //    /////////////////////////////////
